@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="루틴">
+<title>루틴</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+:root{--bg:#FFFFFF;--surface:#F5F5F5;--t1:#111111;--t2:#999999;--t3:#BBBBBB;--red:#E8453C;--border:#EBEBEB;--dash:#DCDCDC;}
+html,body{height:100%;background:#EFEFEF;font-family:'Pretendard',-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;}
+#app{width:100%;max-width:430px;min-height:100vh;min-height:100dvh;margin:0 auto;background:var(--bg);display:flex;flex-direction:column;position:relative;}
+.hdr{padding:14px 22px 0;flex-shrink:0;}
+.hdr-date{display:flex;justify-content:space-between;align-items:center;padding:4px 0;}
+.hdr-date .dt{font-size:20px;font-weight:500;color:var(--t1);}
+.hdr-date .dw{font-size:15px;color:var(--t2);}
+.sync-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;transition:background .3s;}
+.subtabs{display:flex;gap:8px;padding:10px 22px 0;flex-shrink:0;}
+.stab{font-size:14px;padding:5px 12px;border-radius:20px;background:transparent;color:var(--t2);border:1px solid var(--dash);cursor:pointer;font-family:inherit;}
+.stab.on{background:var(--t1);color:#fff;border-color:var(--t1);}
+#content{flex:1;overflow:hidden;}
+.screen{display:none;height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:13px 22px 72px;}
+.screen.on{display:block;}
+.card{background:var(--surface);border-radius:14px;padding:13px 15px;margin-bottom:15px;}
+.card-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;}
+.card-lbl{font-size:13px;color:var(--t2);}
+.prog-bar{height:4px;border-radius:4px;overflow:hidden;display:flex;gap:1px;background:#E8E8E8;}
+.prog-done{height:4px;background:var(--red);transition:width .3s;}
+.prog-miss{height:4px;background:#CCCCCC;transition:width .3s;}
+.prog-rest{flex:1;height:4px;background:#E8E8E8;}
+.stat-nums{display:flex;gap:8px;align-items:center;}
+.sn-done{font-size:14px;color:var(--t1);font-weight:500;}
+.sn-sep{font-size:14px;color:#CCCCCC;}
+.sn-miss{font-size:14px;color:var(--red);font-weight:500;}
+.sec{font-size:16px;font-weight:500;color:var(--t1);margin-bottom:12px;}
+.tl-item{display:flex;align-items:center;gap:12px;cursor:pointer;user-select:none;}
+.tl-item:active{opacity:.7;}
+.ck-done{width:22px;height:22px;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.ck-miss{width:22px;height:22px;border-radius:50%;background:#FFF0F0;border:1px solid var(--red);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.ck-up{width:22px;height:22px;border-radius:50%;border:1px solid var(--dash);background:var(--bg);flex-shrink:0;}
+.conn{display:flex;gap:12px;height:22px;}
+.conn-line{width:22px;display:flex;justify-content:center;flex-shrink:0;}
+.conn-line::after{content:'';border-left:1px dashed var(--dash);height:22px;}
+.sep-row{display:flex;gap:12px;}
+.sep-left{width:22px;display:flex;flex-direction:column;align-items:center;flex-shrink:0;}
+.sep-lt{border-left:1px dashed var(--dash);height:12px;}
+.sep-gap{height:6px;}
+.sep-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
+.sep-lb{border-left:1px dashed var(--dash);height:12px;}
+.sep-right{flex:1;display:flex;align-items:center;gap:6px;}
+.sep-hl{height:1px;flex:1;opacity:.2;}
+.sep-txt{font-size:12px;font-weight:500;white-space:nowrap;}
+.ic{display:flex;align-items:center;flex:1;transition:opacity .15s;}
+.ic.dim{opacity:.35;}
+.isq{width:34px;height:34px;border-radius:10px;background:#F5F5F5;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.itxt{flex:1;margin-left:10px;}
+.iname{font-size:15px;font-weight:500;color:var(--t1);}
+.istreak{font-size:12px;color:var(--t3);margin-top:2px;min-height:14px;}
+.idur{display:flex;align-items:center;gap:3px;flex-shrink:0;}
+.idur span{font-size:13px;color:var(--t3);}
+.wrow{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.wd{font-size:14px;min-width:16px;}
+.wdt{font-size:13px;color:var(--t3);min-width:16px;}
+.wbar{flex:1;height:4px;background:#EBEBEB;border-radius:4px;overflow:hidden;}
+.wfill{height:4px;border-radius:4px;}
+.wfrac{font-size:13px;color:var(--t2);min-width:32px;text-align:right;}
+.sum-card{background:var(--surface);border-radius:14px;padding:14px;margin-top:14px;}
+.sum-inner{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.sum-lbl{font-size:13px;color:var(--t2);margin-bottom:8px;}
+.sum-counts{display:flex;gap:12px;align-items:center;}
+.cnt{display:flex;align-items:center;gap:4px;}
+.cnt-dot{width:4px;height:4px;border-radius:50%;flex-shrink:0;}
+.cnt-val{font-size:14px;font-weight:500;}
+.sum-pct{font-size:34px;font-weight:500;color:var(--red);flex-shrink:0;}
+.streak-row{display:flex;align-items:center;gap:4px;margin-top:8px;}
+.streak-row span{font-size:13px;color:var(--t2);}
+.cal-hdr{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center;margin-bottom:4px;}
+.cal-hdr span{font-size:11px;color:var(--t2);}
+.cal-hdr span.wknd{color:#CCCCCC;}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center;}
+.cal-cell{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 2px;}
+.cal-cell span{font-size:12px;}
+.rlist-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+.add-btn{font-size:14px;color:var(--red);background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:3px;font-family:inherit;padding:0;}
+.ritem{display:flex;align-items:center;gap:12px;padding:18px 0;border-bottom:.5px solid var(--border);cursor:pointer;}
+.ritem:last-child{border-bottom:none;}
+.ritem:active{opacity:.7;}
+.rinfo{flex:1;}
+.rname{font-size:15px;font-weight:500;color:var(--t1);}
+.rmeta{font-size:12px;color:var(--t3);margin-top:2px;}
+.sgrp{margin-bottom:16px;}
+.sgrp-lbl{font-size:13px;font-weight:500;color:var(--t2);margin-bottom:6px;}
+.scard{background:var(--surface);border-radius:14px;overflow:hidden;}
+.srow{display:flex;justify-content:space-between;align-items:center;padding:12px 15px;border-bottom:.5px solid var(--border);cursor:pointer;}
+.srow:last-child{border-bottom:none;}
+.srow:active{background:#F0F0F0;}
+.srow-l{font-size:15px;color:var(--t1);}
+.srow-sub{font-size:12px;color:var(--t3);margin-top:2px;}
+.srow-v{font-size:14px;color:var(--red);font-weight:500;}
+.srow-v.gray{color:var(--t2);}
+.srow-code{font-size:16px;font-weight:500;color:var(--t1);letter-spacing:2px;}
+#bnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;border-top:.5px solid var(--border);padding:10px 0 max(18px,env(safe-area-inset-bottom));background:var(--bg);display:flex;justify-content:space-around;z-index:100;}
+.nbtn{background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--t3);font-family:inherit;padding:0;}
+.nbtn.on{color:var(--t1);}
+.nbtn i{font-size:22px;}
+.nbtn span{font-size:12px;}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:200;align-items:flex-end;justify-content:center;}
+.overlay.on{display:flex;}
+.sheet{width:100%;max-width:430px;background:var(--bg);border-radius:20px 20px 0 0;padding:16px 22px max(24px,env(safe-area-inset-bottom));max-height:88vh;overflow-y:auto;}
+.sheet-hdl{width:36px;height:4px;border-radius:2px;background:var(--dash);margin:0 auto 14px;}
+.sheet-title{font-size:18px;font-weight:500;color:var(--t1);margin-bottom:16px;}
+.fg{margin-bottom:13px;}
+.flbl{font-size:13px;color:var(--t2);margin-bottom:5px;}
+.finput{width:100%;padding:10px 12px;border:1px solid var(--dash);border-radius:10px;font-size:16px;font-family:inherit;color:var(--t1);background:var(--bg);outline:none;-webkit-appearance:none;}
+.finput:focus{border-color:var(--red);}
+.fsel{width:100%;padding:10px 12px;border:1px solid var(--dash);border-radius:10px;font-size:16px;font-family:inherit;color:var(--t1);background:var(--bg);-webkit-appearance:none;appearance:none;outline:none;}
+.day-chips{display:flex;gap:6px;flex-wrap:wrap;}
+.dchip{padding:5px 10px;border-radius:16px;font-size:14px;border:1px solid var(--dash);cursor:pointer;background:transparent;color:var(--t2);font-family:inherit;}
+.dchip.on{background:var(--t1);color:#fff;border-color:var(--t1);}
+.icon-grid{display:flex;flex-wrap:wrap;gap:8px;}
+.iopt{width:38px;height:38px;border-radius:10px;background:#F5F5F5;display:flex;align-items:center;justify-content:center;cursor:pointer;border:2px solid transparent;flex-shrink:0;}
+.iopt.on{border-color:var(--t1);}
+.btn-p{width:100%;padding:12px;background:var(--t1);color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:500;font-family:inherit;cursor:pointer;margin-top:6px;}
+.btn-d{width:100%;padding:12px;background:#FFF0F0;color:var(--red);border:none;border-radius:12px;font-size:16px;font-weight:500;font-family:inherit;cursor:pointer;margin-top:6px;}
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--t1);color:#fff;padding:8px 16px;border-radius:20px;font-size:15px;z-index:300;opacity:0;transition:opacity .25s,transform .25s;white-space:nowrap;pointer-events:none;}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0);}
+.empty{text-align:center;padding:40px 0;color:var(--t3);font-size:15px;line-height:1.8;}
+.sdot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+
+.fab{position:absolute;bottom:calc(100px + env(safe-area-inset-bottom));right:22px;width:52px;height:52px;border-radius:50%;background:var(--red);color:#fff;border:none;font-size:30px;font-weight:300;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(232,69,60,.35);z-index:150;transition:opacity .2s,transform .2s;}
+.fab:active{transform:scale(.93);}
+.fab.hidden{display:none;}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="hdr">
+    <div class="hdr-date">
+      <div style="display:flex;flex-direction:column;">
+        <span class="dt" id="hdr-dt"></span>
+        <span class="dw" id="hdr-dw" style="margin-top:1px;"></span>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <div class="sync-dot" id="sync-dot" style="background:#CCCCCC;" title="동기화 상태"></div>
+      </div>
+    </div>
+  </div>
+  <div class="subtabs" id="subtabs" style="display:none;"></div>
+  <div id="content">
+    <div class="screen" id="sc-day"></div>
+    <div class="screen" id="sc-week"></div>
+    <div class="screen" id="sc-month"></div>
+    <div class="screen" id="sc-routine"></div>
+    <div class="screen" id="sc-settings"></div>
+  </div>
+  <div id="bnav"></div>
+  <button class="fab hidden" id="fab" onclick="openAdd()">+</button>
+</div>
+<div class="overlay" id="overlay" onclick="overlayClick(event)">
+  <div class="sheet" id="sheet"></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ================================================================
+   SUPABASE
+================================================================ */
+const SB_URL = 'https://hmgrhuuakdkxnecnhxyc.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhtZ3JodXVha2RreG5lY25oeHljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA4OTY2NDIsImV4cCI6MjA5NjQ3MjY0Mn0.p5uTomrB4ElylfnkAJCAUMhzAa2j4x0oBRkqRPJB3kE';
+let sb;
+
+function initSB() {
+  try { sb = window.supabase.createClient(SB_URL, SB_KEY); } catch(e) { console.warn('Supabase init failed', e); }
+}
+
+function setSyncStatus(status) {
+  const dot = document.getElementById('sync-dot');
+  if (!dot) return;
+  dot.style.background = status === 'ok' ? '#4CAF50' : status === 'syncing' ? '#FF9800' : '#CCCCCC';
+}
+
+async function cloudLoad() {
+  if (!sb || !S.userId) return;
+  setSyncStatus('syncing');
+  try {
+    const [r1, r2, r3] = await Promise.all([
+      sb.from('routines').select('data').eq('user_id', S.userId).maybeSingle(),
+      sb.from('records').select('date,data').eq('user_id', S.userId),
+      sb.from('settings').select('data').eq('user_id', S.userId).maybeSingle(),
+    ]);
+    if (r1.data?.data) S.routines = r1.data.data;
+    if (r2.data) r2.data.forEach(row => { S.records[row.date] = row.data; });
+    if (r3.data?.data) S.cfg = { ...S.cfg, ...r3.data.data };
+    saveLocal();
+    setSyncStatus('ok');
+  } catch(e) { console.warn('cloud load:', e); setSyncStatus('off'); }
+}
+
+let cloudSaveTimer = null;
+function scheduleCloudSave() {
+  if (cloudSaveTimer) clearTimeout(cloudSaveTimer);
+  cloudSaveTimer = setTimeout(cloudSave, 1200);
+}
+
+async function cloudSave() {
+  if (!sb || !S.userId) return;
+  setSyncStatus('syncing');
+  try {
+    const now = new Date().toISOString();
+    const ops = [
+      sb.from('routines').upsert({ user_id: S.userId, data: S.routines, updated_at: now }),
+      sb.from('settings').upsert({ user_id: S.userId, data: S.cfg, updated_at: now }),
+    ];
+    // Save recent records (last 90 days)
+    const cutoff = new Date(); cutoff.setDate(cutoff.getDate() - 90);
+    const cutStr = dateStr(cutoff);
+    const recEntries = Object.entries(S.records).filter(([d]) => d >= cutStr);
+    if (recEntries.length > 0) {
+      ops.push(sb.from('records').upsert(
+        recEntries.map(([date, data]) => ({ user_id: S.userId, date, data, updated_at: now }))
+      ));
+    }
+    await Promise.all(ops);
+    setSyncStatus('ok');
+  } catch(e) { console.warn('cloud save:', e); setSyncStatus('off'); }
+}
+
+/* ================================================================
+   CONSTANTS
+================================================================ */
+const DNAMES  = ['일','월','화','수','목','금','토'];
+const DFULL   = ['일요일','월요일','화요일','수요일','목요일','금요일','토요일'];
+const MONTHS  = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
+const ICON_OPTS = [
+  {i:'ti-sun',c:'#C8693A'},{i:'ti-coffee',c:'#B07C0C'},{i:'ti-mail',c:'#1D6FA8'},
+  {i:'ti-users',c:'#2D7A4F'},{i:'ti-pencil',c:'#6B48C4'},{i:'ti-apple',c:'#C2530D'},
+  {i:'ti-layout',c:'#A21CAF'},{i:'ti-check',c:'#0F766E'},{i:'ti-walk',c:'#C8693A'},
+  {i:'ti-heart',c:'#2D7A4F'},{i:'ti-book',c:'#B07C0C'},{i:'ti-run',c:'#C8693A'},
+  {i:'ti-music',c:'#6B48C4'},{i:'ti-chart-bar',c:'#0F766E'},{i:'ti-star',c:'#B07C0C'},
+  {i:'ti-home',c:'#1D6FA8'},{i:'ti-camera',c:'#A21CAF'},{i:'ti-bell',c:'#C8693A'},
+];
+const DEF_ROUTINES = [
+  {id:'r1',name:'기상 & 스트레칭',time:'07:30',cat:'personal',days:[1,2,3,4,5],dur:10,icon:'ti-sun',ic:'#C8693A',notif:true},
+  {id:'r1w',name:'기상 & 스트레칭',time:'09:00',cat:'personal',days:[0,6],dur:10,icon:'ti-sun',ic:'#C8693A',notif:true},
+  {id:'r2',name:'아침 식사',time:'08:00',cat:'personal',days:[1,2,3,4,5],dur:20,icon:'ti-coffee',ic:'#B07C0C',notif:true},
+  {id:'r2w',name:'아침 식사',time:'09:30',cat:'personal',days:[0,6],dur:20,icon:'ti-coffee',ic:'#B07C0C',notif:true},
+  {id:'r3',name:'이메일 확인',time:'10:10',cat:'work',days:[1,2,3,4,5],dur:15,icon:'ti-mail',ic:'#1D6FA8',notif:true},
+  {id:'r4',name:'업무 집중시간',time:'11:00',cat:'work',days:[1,2,3,4,5],dur:90,icon:'ti-pencil',ic:'#6B48C4',notif:true},
+  {id:'r6',name:'점심',time:'12:30',cat:'personal',days:[0,1,2,3,4,5,6],dur:45,icon:'ti-apple',ic:'#C2530D',notif:true},
+  {id:'r7',name:'업무 집중시간',time:'14:00',cat:'work',days:[1,2,3,4,5],dur:90,icon:'ti-layout',ic:'#A21CAF',notif:true},
+  {id:'r8',name:'업무 정리',time:'16:40',cat:'work',days:[1,2,3,4,5],dur:30,icon:'ti-check',ic:'#0F766E',notif:true},
+  {id:'r9',name:'저녁식사',time:'18:30',cat:'personal',days:[0,1,2,3,4,5,6],dur:30,icon:'ti-home',ic:'#1D6FA8',notif:true},
+  {id:'r10',name:'운동',time:'19:30',cat:'personal',days:[1,3,5],dur:60,icon:'ti-heart',ic:'#2D7A4F',notif:true},
+  {id:'r12',name:'씻기',time:'21:30',cat:'personal',days:[0,1,2,3,4,5,6],dur:20,icon:'ti-run',ic:'#C8693A',notif:true},
+  {id:'r13',name:'부업',time:'22:00',cat:'personal',days:[0,1,2,3,4,5,6],dur:60,icon:'ti-chart-bar',ic:'#0F766E',notif:true},
+  {id:'r11',name:'독서',time:'23:00',cat:'personal',days:[0,1,2,3,4,5,6],dur:30,icon:'ti-book',ic:'#B07C0C',notif:true},
+  {id:'r14',name:'잠잘준비',time:'23:50',cat:'personal',days:[0,1,2,3,4,5,6],dur:15,icon:'ti-star',ic:'#6B48C4',notif:true},
+];
+
+/* ================================================================
+   STATE
+================================================================ */
+let S = { userId:'', routines:[], records:{}, cfg:{ workStart:'10:00', workEnd:'17:00', workDays:[1,2,3,4,5], graceMins:30, notifMins:10, notifOn:false } };
+let nav = { bot:'today', sub:'day' };
+let nTimers = [], editId = null;
+
+function genUserId() {
+  return Math.random().toString(36).slice(2,8).toUpperCase();
+}
+
+/* ================================================================
+   PERSISTENCE
+================================================================ */
+function saveLocal() {
+  localStorage.setItem('routine-v3', JSON.stringify({ userId:S.userId, routines:S.routines, records:S.records, cfg:S.cfg }));
+}
+
+function save() {
+  saveLocal();
+  scheduleCloudSave();
+}
+
+function loadLocal() {
+  try {
+    const raw = localStorage.getItem('routine-v3');
+    if (raw) {
+      const p = JSON.parse(raw);
+      S.userId   = p.userId || genUserId();
+      S.routines = p.routines && p.routines.length ? p.routines : DEF_ROUTINES;
+      S.records  = p.records  || {};
+      if (p.cfg) S.cfg = { ...S.cfg, ...p.cfg };
+    } else {
+      // Carry over userId from v2 so sync code stays the same
+      try {
+        const old = localStorage.getItem('routine-v2');
+        const oldData = old ? JSON.parse(old) : null;
+        S.userId = oldData?.userId || genUserId();
+      } catch(e) { S.userId = genUserId(); }
+      S.routines = DEF_ROUTINES;
+    }
+  } catch(e) { S.userId = genUserId(); S.routines = DEF_ROUTINES; }
+}
+
+/* ================================================================
+   UTILS
+================================================================ */
+function dateStr(d) { d=d||new Date(); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+function pad(n){ return String(n).padStart(2,'0'); }
+function mins(t){ const [h,m]=t.split(':').map(Number); return h*60+m; }
+function nowMins(){ const n=new Date(); return n.getHours()*60+n.getMinutes(); }
+function nowStr(){ const n=new Date(); return pad(n.getHours())+':'+pad(n.getMinutes()); }
+function uid(){ return 'r'+Date.now()+Math.random().toString(36).slice(2,6); }
+function fmtTime12(t){ if(!t)return ''; const [h,m]=t.split(':').map(Number); const ap=h>=12?'오후':'오전',hh=h%12||12; return `${ap} ${hh}:${String(m).padStart(2,'0')}`; }
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function routinesForDate(d) {
+  const dow=(d||new Date()).getDay();
+  return S.routines.filter(r=>r.days.includes(dow)).sort((a,b)=>mins(a.time)-mins(b.time));
+}
+function getStatus(r, ds) {
+  if ((S.records[ds]||{})[r.id]==='done') return 'done';
+  const nm=nowMins(), rm=mins(r.time), isToday=ds===dateStr();
+  if (isToday && nm>rm+(S.cfg.graceMins||30)) return 'missed';
+  return 'upcoming';
+}
+function isWorkHours() {
+  const n=new Date(), dow=n.getDay(), nm=nowMins();
+  return S.cfg.workDays.includes(dow) && nm>=mins(S.cfg.workStart) && nm<mins(S.cfg.workEnd);
+}
+function getStreak(rid) {
+  let s=0, t=new Date();
+  for(let i=1;i<=365;i++){ const d=new Date(t); d.setDate(d.getDate()-i); if((S.records[dateStr(d)]||{})[rid]==='done') s++; else break; }
+  return s;
+}
+function calcStats(ds,rs){ let done=0,miss=0; for(const r of rs){ const s=getStatus(r,ds); if(s==='done')done++; else if(s==='missed')miss++; } return{done,miss,total:rs.length}; }
+function daysLabel(days){ if(days.length===7)return'매일'; if(days.length===5&&[1,2,3,4,5].every(d=>days.includes(d)))return'평일'; if(days.length===2&&days.includes(0)&&days.includes(6))return'주말'; return days.slice().sort((a,b)=>a-b).map(d=>DNAMES[d]).join(', '); }
+function weekStart(){ const t=new Date(),dow=t.getDay(),m=new Date(t); m.setDate(t.getDate()-(dow===0?6:dow-1)); return m; }
+
+/* ================================================================
+   HEADER
+================================================================ */
+function renderHeader() {
+  const n=new Date();
+  document.getElementById('hdr-dt').textContent = n.getFullYear()+'년 '+MONTHS[n.getMonth()]+' '+n.getDate()+'일';
+  document.getElementById('hdr-dw').textContent = DFULL[n.getDay()];
+}
+
+/* ================================================================
+   SUBTABS
+================================================================ */
+function renderSubtabs() {
+  const el=document.getElementById('subtabs');
+  if(nav.bot!=='today'){el.style.display='none';return;}
+  el.style.display='flex';
+  el.innerHTML=['day','week','month'].map(t=>`<button class="stab${nav.sub===t?' on':''}" onclick="switchSub('${t}')">${{day:'오늘',week:'주간',month:'월간'}[t]}</button>`).join('');
+}
+
+/* ================================================================
+   DAY SCREEN
+================================================================ */
+function buildDayElems(routines) {
+  const ws=mins(S.cfg.workStart), we=mins(S.cfg.workEnd), nm=nowMins(), now=nowStr();
+  const isWD=S.cfg.workDays.includes(new Date().getDay());
+  const elems=[], flags={ws:!isWD,we:!isWD,now:false};
+  for(const r of routines){
+    const rm=mins(r.time);
+    if(!flags.ws&&rm>=ws){flags.ws=true;elems.push({t:'sep',label:S.cfg.workStart+' 근무 시작',color:'#BBBBBB'});}
+    if(!flags.we&&rm>=we){flags.we=true;elems.push({t:'sep',label:S.cfg.workEnd+' 근무 종료',color:'#BBBBBB'});}
+    if(!flags.now&&rm>nm){flags.now=true;elems.push({t:'sep',label:'지금 '+now,color:'#E8453C'});}
+    elems.push({t:'item',r});
+  }
+  if(isWD&&!flags.we) elems.push({t:'sep',label:S.cfg.workEnd+' 근무 종료',color:'#BBBBBB'});
+  return elems;
+}
+
+function renderDay() {
+  const el=document.getElementById('sc-day');
+  const today=new Date(), ds=dateStr(today), rs=routinesForDate(today);
+  const {done,miss,total}=calcStats(ds,rs);
+  const dp=total>0?Math.round(done/total*100):0, mp=total>0?Math.round(miss/total*100):0;
+  let h=`<div class="card"><div class="card-hdr"><span class="card-lbl">오늘 진행률</span>
+    <div class="stat-nums"><span class="sn-done">${done} 완료</span><span class="sn-sep">·</span><span class="sn-miss">${miss} 놓침</span></div>
+  </div><div class="prog-bar"><div class="prog-done" style="width:${dp}%"></div><div class="prog-miss" style="width:${mp}%"></div><div class="prog-rest"></div></div></div>
+  <div class="sec">오늘의 루틴</div>`;
+  if(!rs.length){ h+=`<div class="empty">오늘 예정된 루틴이 없어요<br>루틴 탭에서 추가해보세요</div>`; }
+  else {
+    const elems=buildDayElems(rs);
+    for(let i=0;i<elems.length;i++){
+      const e=elems[i], next=elems[i+1];
+      if(e.t==='sep'){
+        h+=`<div class="sep-row"><div class="sep-left"><div class="sep-lt"></div><div class="sep-gap"></div><div class="sep-dot" style="background:${e.color};"></div><div class="sep-gap"></div><div class="sep-lb"></div></div>
+        <div class="sep-right"><div class="sep-hl" style="background:${e.color};"></div><span class="sep-txt" style="color:${e.color};">${e.label}</span><div class="sep-hl" style="background:${e.color};"></div></div></div>`;
+      } else {
+        const r=e.r, s=getStatus(r,ds), dim=s==='missed'?' dim':'', streak=getStreak(r.id);
+        const ck=s==='done'?`<div class="ck-done"><i class="ti ti-check" style="font-size:13px;color:#fff;"></i></div>`:s==='missed'?`<div class="ck-miss"><i class="ti ti-x" style="font-size:12px;color:var(--red);"></i></div>`:`<div class="ck-up"></div>`;
+        h+=`<div class="tl-item" onclick="toggle('${r.id}')">${ck}<div class="ic${dim}"><div class="isq"><i class="ti ${r.icon}" style="font-size:18px;color:${r.ic};"></i></div>
+        <div class="itxt"><div class="iname">${esc(r.name)}</div><div class="istreak">${streak>0?'스트릭 '+streak+'일':fmtTime12(r.time)}</div></div>
+        <div class="idur"><i class="ti ti-clock" style="font-size:13px;color:#BBBBBB;"></i><span>${r.dur}분</span></div></div></div>`;
+        if(next&&next.t==='item') h+=`<div class="conn"><div class="conn-line"></div></div>`;
+      }
+    }
+  }
+  el.innerHTML=h;
+}
+
+function toggle(rid) {
+  const ds=dateStr(), r=S.routines.find(x=>x.id===rid); if(!r) return;
+  if(!S.records[ds]) S.records[ds]={};
+  if(getStatus(r,ds)==='done') delete S.records[ds][rid]; else S.records[ds][rid]='done';
+  save(); renderDay();
+}
+
+/* ================================================================
+   WEEK SCREEN
+================================================================ */
+function renderWeek() {
+  const el=document.getElementById('sc-week');
+  const mon=weekStart(), today=dateStr();
+  let rows='', totalDone=0, totalMiss=0, totalItems=0;
+  for(let i=0;i<7;i++){
+    const d=new Date(mon); d.setDate(mon.getDate()+i);
+    const ds=dateStr(d), isToday=ds===today, isFuture=ds>today;
+    const rs=routinesForDate(d), done=rs.filter(r=>(S.records[ds]||{})[r.id]==='done').length;
+    const tot=rs.length, pct=tot>0?Math.round(done/tot*100):0;
+    const miss=rs.filter(r=>getStatus(r,ds)==='missed').length;
+    if(!isFuture&&tot>0){totalDone+=done;totalItems+=tot;totalMiss+=miss;}
+    rows+=`<div class="wrow"><span class="wd" style="color:${isToday?'#111':'#999'};font-weight:${isToday?500:400};">${DNAMES[d.getDay()]}</span>
+    <span class="wdt">${d.getDate()}</span>
+    <div class="wbar">${(!isFuture&&tot>0)?`<div class="wfill" style="width:${pct}%;background:${isToday?'#E8453C':'#CCCCCC'};"></div>`:''}</div>
+    <span class="wfrac">${(isFuture||tot===0)?'—':done+'/'+tot}</span></div>`;
+  }
+  const pct=totalItems>0?Math.round(totalDone/totalItems*100):0;
+  el.innerHTML=`<div class="sec">이번 주</div>${rows}
+  <div class="sum-card"><div class="sum-inner"><div><div class="sum-lbl">주간 완료율</div><div class="sum-counts">
+  <div class="cnt"><div class="cnt-dot" style="background:#111;"></div><span class="cnt-val" style="color:#111;">${totalDone} 완료</span></div>
+  <div class="cnt"><div class="cnt-dot" style="background:var(--red);"></div><span class="cnt-val" style="color:var(--red);">${totalMiss} 놓침</span></div>
+  </div></div><div class="sum-pct">${pct}%</div></div></div>`;
+}
+
+/* ================================================================
+   MONTH SCREEN
+================================================================ */
+function renderMonth() {
+  const el=document.getElementById('sc-month');
+  const now=new Date(), yr=now.getFullYear(), mo=now.getMonth();
+  const first=new Date(yr,mo,1), lastDay=new Date(yr,mo+1,0).getDate();
+  const offset=(first.getDay()+6)%7, today=dateStr();
+  let cells='', totalDone=0, totalMiss=0, totalItems=0;
+  for(let i=0;i<offset;i++) cells+='<div></div>';
+  for(let day=1;day<=lastDay;day++){
+    const d=new Date(yr,mo,day), ds=dateStr(d), isToday=ds===today, isFuture=ds>today;
+    const rs=routinesForDate(d), done=rs.filter(r=>(S.records[ds]||{})[r.id]==='done').length, tot=rs.length;
+    const pct=tot>0?Math.round(done/tot*100):0;
+    const miss=rs.filter(r=>getStatus(r,ds)==='missed').length;
+    if(!isFuture&&tot>0){totalDone+=done;totalItems+=tot;totalMiss+=miss;}
+    let bg='transparent',tc='#CCCCCC',brd='none';
+    if(isToday){brd='1px solid var(--red)';tc='var(--red)';}
+    else if(!isFuture&&tot>0){ if(pct>=80){bg='#FFE8E8';tc='#E8453C';} else if(pct>=50){bg='#F5F5F5';tc='#888';} else{bg='#F5F5F5';tc='#CCC';} }
+    cells+=`<div class="cal-cell" style="background:${bg};border:${brd};"><span style="color:${tc};">${day}</span></div>`;
+  }
+  const pct=totalItems>0?Math.round(totalDone/totalItems*100):0, streak=calcStreak();
+  el.innerHTML=`<div class="sec">${MONTHS[mo]}</div>
+  <div class="cal-hdr"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span class="wknd">토</span><span class="wknd">일</span></div>
+  <div class="cal-grid">${cells}</div>
+  <div class="sum-card"><div class="sum-inner"><div><div class="sum-lbl">월간 완료율</div>
+  <div class="sum-counts" style="margin-bottom:${streak>0?8:0}px;">
+  <div class="cnt"><div class="cnt-dot" style="background:#111;"></div><span class="cnt-val" style="color:#111;">${totalDone} 완료</span></div>
+  <div class="cnt"><div class="cnt-dot" style="background:var(--red);"></div><span class="cnt-val" style="color:var(--red);">${totalMiss} 놓침</span></div>
+  </div>${streak>0?`<div class="streak-row"><i class="ti ti-flame" style="font-size:14px;color:var(--red);"></i><span>연속 ${streak}일 달성 중</span></div>`:''}</div>
+  <div class="sum-pct">${pct}%</div></div></div>`;
+}
+
+function calcStreak() {
+  let s=0; const today=new Date();
+  for(let i=0;i<365;i++){
+    const d=new Date(today); d.setDate(d.getDate()-i);
+    const ds=dateStr(d), rs=routinesForDate(d);
+    if(!rs.length) continue;
+    if(rs.every(r=>(S.records[ds]||{})[r.id]==='done')) s++;
+    else if(ds!==dateStr()) break;
+  }
+  return s;
+}
+
+/* ================================================================
+   ROUTINE LIST SCREEN
+================================================================ */
+function renderRoutineList() {
+  const el=document.getElementById('sc-routine');
+  let h=`<div class="rlist-hdr"><span class="sec" style="margin-bottom:0;">루틴 설정</span>
+  <button class="add-btn" onclick="openAdd()"><i class="ti ti-plus" style="font-size:15px;"></i> 추가</button></div>`;
+  if(!S.routines.length){ h+=`<div class="empty">루틴을 추가해보세요</div>`; }
+  else { h+=S.routines.map(r=>`<div class="ritem" onclick="openEdit('${r.id}')">
+    <div class="isq"><i class="ti ${r.icon}" style="font-size:18px;color:${r.ic};"></i></div>
+    <div class="rinfo"><div class="rname">${esc(r.name)}</div><div class="rmeta">${r.time} · ${daysLabel(r.days)}</div></div>
+    <i class="ti ti-chevron-right" style="font-size:16px;color:#CCCCCC;"></i></div>`).join(''); }
+  el.innerHTML=h;
+}
+
+/* ================================================================
+   SETTINGS SCREEN
+================================================================ */
+function renderSettings() {
+  const c=S.cfg;
+  const wdl=[1,2,3,4,5].every(d=>c.workDays.includes(d))&&c.workDays.length===5?'월 — 금':c.workDays.map(d=>DNAMES[d]).join(', ');
+  const nc=c.notifOn?'#4CAF50':'#CCCCCC', nl=c.notifOn?'켜짐':'꺼짐';
+  document.getElementById('sc-settings').innerHTML=`
+  <div class="sec">설정</div>
+  <div class="sgrp"><div class="sgrp-lbl">동기화</div><div class="scard">
+    <div class="srow" onclick="copySyncCode()">
+      <div><div class="srow-l">동기화 코드</div><div class="srow-sub">아이폰에서 이 코드 입력 → 데이터 공유</div></div>
+      <span class="srow-code">${esc(S.userId)}</span>
+    </div>
+    <div class="srow" onclick="editCfg('syncCode')">
+      <div class="srow-l">다른 기기 코드 입력</div>
+      <i class="ti ti-chevron-right" style="font-size:16px;color:#CCCCCC;"></i>
+    </div>
+    <div class="srow" onclick="forceSync()" style="cursor:pointer;">
+      <div class="srow-l">지금 동기화</div>
+      <i class="ti ti-refresh" style="font-size:16px;color:#CCCCCC;"></i>
+    </div>
+  </div></div>
+  <div class="sgrp"><div class="sgrp-lbl">근무 시간</div><div class="scard">
+    <div class="srow" onclick="editCfg('workDays')"><span class="srow-l">근무 요일</span><span class="srow-v gray">${wdl}</span></div>
+    <div class="srow" onclick="editCfg('workStart')"><span class="srow-l">시작</span><span class="srow-v">${c.workStart}</span></div>
+    <div class="srow" onclick="editCfg('workEnd')"><span class="srow-l">종료</span><span class="srow-v">${c.workEnd}</span></div>
+  </div></div>
+  <div class="sgrp"><div class="sgrp-lbl">알림</div><div class="scard">
+    <div class="srow" onclick="toggleNotif()">
+      <div><div class="srow-l">알림 사용</div><div class="srow-sub">근무시간: 맥 · 그 외: 아이폰</div></div>
+      <div style="display:flex;align-items:center;gap:5px;"><div class="sdot" style="background:${nc};"></div><span style="font-size:13px;color:#999;">${nl}</span></div>
+    </div>
+    <div class="srow" onclick="editCfg('notifMins')"><span class="srow-l">미리 알림</span><span class="srow-v">${c.notifMins}분 전</span></div>
+  </div></div>
+  <div class="sgrp"><div class="sgrp-lbl">놓침 판정</div><div class="scard">
+    <div class="srow" onclick="editCfg('graceMins')">
+      <div><div class="srow-l">유예 시간</div><div class="srow-sub">예정 시각 이후</div></div>
+      <span class="srow-v">${c.graceMins}분</span>
+    </div>
+  </div></div>
+  <div class="sgrp"><div class="sgrp-lbl">아이폰 설치</div><div class="scard">
+    <div class="srow" style="cursor:default;"><div><div class="srow-l">홈 화면에 추가</div><div class="srow-sub">Safari → 공유 → 홈 화면에 추가</div></div></div>
+  </div></div>`;
+}
+
+async function forceSync() {
+  toast('동기화 중...');
+  await cloudSave();
+  await cloudLoad();
+  renderAll();
+  toast('동기화 완료');
+}
+
+function copySyncCode() {
+  navigator.clipboard?.writeText(S.userId).then(()=>toast('코드 복사됐어요 — 아이폰에서 입력하세요'));
+}
+
+/* ================================================================
+   BOTTOM NAV
+================================================================ */
+function renderBNav() {
+  document.getElementById('bnav').innerHTML=[
+    {id:'today',icon:'ti-calendar-event',lbl:'오늘'},
+    {id:'routine',icon:'ti-repeat',lbl:'루틴'},
+    {id:'settings',icon:'ti-settings',lbl:'설정'},
+  ].map(b=>`<button class="nbtn${nav.bot===b.id?' on':''}" onclick="switchBot('${b.id}')"><i class="ti ${b.icon}"></i><span>${b.lbl}</span></button>`).join('');
+}
+
+/* ================================================================
+   NAVIGATION
+================================================================ */
+function switchBot(tab) {
+  nav.bot=tab; renderSubtabs(); renderBNav();
+  const scr=tab==='today'?nav.sub:tab;
+  showScreen(scr);
+  if(scr==='day')renderDay();
+  if(scr==='week')renderWeek(); if(scr==='month')renderMonth();
+  if(scr==='routine')renderRoutineList(); if(scr==='settings')renderSettings();
+  const fab=document.getElementById('fab');
+  if(fab) fab.classList.toggle('hidden', scr!=='routine');
+}
+function switchSub(tab) {
+  nav.sub=tab; renderSubtabs(); showScreen(tab);
+  if(tab==='week')renderWeek(); if(tab==='month')renderMonth();
+}
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
+  const el=document.getElementById('sc-'+name); if(el) el.classList.add('on');
+}
+function renderAll() { renderDay(); renderRoutineList(); renderSettings(); if(nav.sub==='week')renderWeek(); if(nav.sub==='month')renderMonth(); }
+
+/* ================================================================
+   MODAL — ROUTINE ADD/EDIT
+================================================================ */
+function openAdd(){ editId=null; showSheet(routineForm(null)); }
+function openEdit(id){ editId=id; showSheet(routineForm(S.routines.find(r=>r.id===id))); }
+
+function routineForm(r) {
+  const name=r?.name||'', time=r?.time||'08:00', dur=r?.dur||30;
+  const cat=r?.cat||'personal', days=r?.days||[1,2,3,4,5];
+  const icon=r?.icon||'ti-heart', ic=r?.ic||'#C8693A';
+  const dayCh=DNAMES.map((d,i)=>`<button type="button" class="dchip${days.includes(i)?' on':''}" onclick="this.classList.toggle('on')">${d}</button>`).join('');
+  const icons=ICON_OPTS.map(o=>`<div class="iopt${o.i===icon?' on':''}" onclick="pickIcon('${o.i}','${o.c}',this)"><i class="ti ${o.i}" style="font-size:18px;color:${o.c};"></i></div>`).join('');
+  return `<div class="sheet-hdl"></div><div class="sheet-title">${r?'루틴 수정':'루틴 추가'}</div>
+  <div class="fg"><div class="flbl">이름</div><input class="finput" id="fn" placeholder="루틴 이름" value="${esc(name)}"></div>
+  <div class="fg"><div class="flbl">시간</div><input class="finput" id="ft" type="time" value="${time}"></div>
+  <div class="fg"><div class="flbl">소요 시간 (분)</div><input class="finput" id="fd" type="number" value="${dur}" min="1" max="480"></div>
+  <div class="fg"><div class="flbl">카테고리</div><select class="fsel" id="fc"><option value="personal"${cat==='personal'?' selected':''}>개인</option><option value="work"${cat==='work'?' selected':''}>업무</option></select></div>
+  <div class="fg"><div class="flbl">반복 요일</div><div class="day-chips" id="dchips">${dayCh}</div></div>
+  <div class="fg"><div class="flbl">아이콘</div><div class="icon-grid" id="ipick">${icons}</div>
+  <input type="hidden" id="fi" value="${icon}"><input type="hidden" id="fic" value="${ic}"></div>
+  <button class="btn-p" onclick="saveRoutine()">저장</button>
+  ${r?`<button class="btn-d" onclick="delRoutine('${r.id}')">삭제</button>`:''}`;
+}
+
+function pickIcon(icon,ic,el) {
+  document.querySelectorAll('.iopt').forEach(d=>d.classList.remove('on'));
+  el.classList.add('on'); document.getElementById('fi').value=icon; document.getElementById('fic').value=ic;
+}
+
+function saveRoutine() {
+  const name=document.getElementById('fn').value.trim();
+  if(!name){toast('이름을 입력해주세요');return;}
+  const time=document.getElementById('ft').value, dur=parseInt(document.getElementById('fd').value)||30;
+  const cat=document.getElementById('fc').value, icon=document.getElementById('fi').value, ic=document.getElementById('fic').value;
+  const days=[];
+  document.querySelectorAll('#dchips .dchip.on').forEach(b=>{ const i=DNAMES.indexOf(b.textContent); if(i>=0)days.push(i); });
+  if(!days.length){toast('요일을 선택해주세요');return;}
+  if(editId){ const i=S.routines.findIndex(r=>r.id===editId); if(i>=0) S.routines[i]={...S.routines[i],name,time,dur,cat,icon,ic,days}; }
+  else { S.routines.push({id:uid(),name,time,dur,cat,icon,ic,days,notif:true}); }
+  S.routines.sort((a,b)=>mins(a.time)-mins(b.time));
+  save(); closeSheet(); renderRoutineList(); renderDay(); toast('저장됐어요'); scheduleNotifs();
+}
+
+function delRoutine(id) {
+  if(!confirm('이 루틴을 삭제할까요?'))return;
+  S.routines=S.routines.filter(r=>r.id!==id); save(); closeSheet(); renderRoutineList(); renderDay();
+}
+
+/* ================================================================
+   MODAL — SETTINGS EDIT
+================================================================ */
+function editCfg(key) {
+  const c=S.cfg; let html='';
+  if(key==='workStart'||key==='workEnd'){
+    const lbl=key==='workStart'?'근무 시작':'근무 종료';
+    html=`<div class="sheet-hdl"></div><div class="sheet-title">${lbl}</div><div class="fg"><input class="finput" id="cfgval" type="time" value="${c[key]}"></div><button class="btn-p" onclick="saveCfg('${key}')">저장</button>`;
+  } else if(key==='graceMins'||key==='notifMins'){
+    const lbl=key==='graceMins'?'유예 시간 (분)':'미리 알림 (분)';
+    html=`<div class="sheet-hdl"></div><div class="sheet-title">${lbl}</div><div class="fg"><input class="finput" id="cfgval" type="number" value="${c[key]}" min="0" max="120"></div><button class="btn-p" onclick="saveCfg('${key}')">저장</button>`;
+  } else if(key==='workDays'){
+    const btns=DNAMES.map((d,i)=>`<button type="button" class="dchip${c.workDays.includes(i)?' on':''}" onclick="this.classList.toggle('on')">${d}</button>`).join('');
+    html=`<div class="sheet-hdl"></div><div class="sheet-title">근무 요일</div><div class="fg"><div class="day-chips" id="dchips">${btns}</div></div><button class="btn-p" onclick="saveWDays()">저장</button>`;
+  } else if(key==='syncCode'){
+    html=`<div class="sheet-hdl"></div><div class="sheet-title">동기화 코드 입력</div>
+    <div class="fg"><div class="flbl">맥에서 표시된 코드를 입력하세요</div>
+    <input class="finput" id="cfgval" placeholder="XXXXXX" maxlength="8" style="text-transform:uppercase;letter-spacing:2px;font-size:20px;text-align:center;"></div>
+    <button class="btn-p" onclick="applySyncCode()">연결</button>`;
+  }
+  showSheet(html);
+}
+
+function saveCfg(key) {
+  const v=document.getElementById('cfgval').value;
+  S.cfg[key]=isNaN(v)||v===''?v:parseInt(v);
+  save(); closeSheet(); renderSettings(); renderDay(); toast('저장됐어요');
+}
+function saveWDays() {
+  const days=[]; document.querySelectorAll('#dchips .dchip.on').forEach(b=>{ const i=DNAMES.indexOf(b.textContent); if(i>=0)days.push(i); });
+  S.cfg.workDays=days; save(); closeSheet(); renderSettings(); renderDay(); toast('저장됐어요');
+}
+async function applySyncCode() {
+  const code=(document.getElementById('cfgval').value||'').trim().toUpperCase();
+  if(code.length<4){toast('코드를 입력해주세요');return;}
+  S.userId=code; saveLocal();
+  closeSheet(); toast('연결 중...');
+  await cloudLoad(); renderAll(); toast('동기화 완료');
+}
+
+/* ================================================================
+   NOTIFICATIONS
+================================================================ */
+function toggleNotif() {
+  if(!S.cfg.notifOn) reqNotif();
+  else { S.cfg.notifOn=false; save(); clearTimers(); renderSettings(); }
+}
+function reqNotif() {
+  if(!('Notification' in window)){toast('이 브라우저는 알림을 지원하지 않아요');return;}
+  Notification.requestPermission().then(p=>{
+    if(p==='granted'){S.cfg.notifOn=true;save();scheduleNotifs();renderSettings();toast('알림이 켜졌어요');}
+    else toast('알림 권한이 필요해요');
+  });
+}
+function clearTimers(){ nTimers.forEach(t=>clearTimeout(t)); nTimers=[]; }
+function scheduleNotifs() {
+  clearTimers();
+  if(!S.cfg.notifOn||Notification.permission!=='granted') return;
+  const rs=routinesForDate(), adv=S.cfg.notifMins||10, nm=nowMins();
+  for(const r of rs){
+    if(!r.notif) continue;
+    const diff=(mins(r.time)-adv-nm)*60000; if(diff<=0) continue;
+    nTimers.push(setTimeout(()=>{ new Notification(r.name,{body:`${r.time} 시작 · ${r.dur}분 · ${isWorkHours()?'맥 알림':'아이폰 알림'}`,tag:r.id}); },diff));
+  }
+}
+
+/* ================================================================
+   SHEET / OVERLAY
+================================================================ */
+function showSheet(html){ document.getElementById('sheet').innerHTML=html; document.getElementById('overlay').classList.add('on'); }
+function closeSheet(){ document.getElementById('overlay').classList.remove('on'); }
+function overlayClick(e){ if(e.target===document.getElementById('overlay')) closeSheet(); }
+
+/* ================================================================
+   TOAST
+================================================================ */
+let toastT=null;
+function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('on'); if(toastT)clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('on'),2200); }
+
+/* ================================================================
+   INIT
+================================================================ */
+async function init() {
+  initSB();
+  loadLocal();
+  renderHeader(); renderSubtabs(); renderBNav(); renderDay(); showScreen('day');
+  scheduleNotifs();
+  // Load from cloud (non-blocking, re-renders after)
+  cloudLoad().then(()=>{ renderAll(); });
+  // Auto-refresh every minute
+  setInterval(()=>{ renderHeader(); if(nav.bot==='today'&&nav.sub==='day') renderDay(); }, 60000);
+  // Periodic cloud pull every 30 seconds
+  setInterval(()=>{ cloudLoad().then(()=>{ if(nav.bot==='today'&&nav.sub==='day')renderDay(); }); }, 30000);
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
