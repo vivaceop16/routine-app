@@ -8,133 +8,128 @@
 <meta name="apple-mobile-web-app-title" content="루틴">
 <title>루틴</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 :root{--bg:#FFFFFF;--surface:#F5F5F5;--t1:#111111;--t2:#999999;--t3:#BBBBBB;--red:#E8453C;--border:#EBEBEB;--dash:#DCDCDC;}
-html,body{height:100%;background:#EFEFEF;font-family:'Pretendard',-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;}
+html,body{height:100%;background:#EFEFEF;font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;}
 #app{width:100%;max-width:430px;min-height:100vh;min-height:100dvh;margin:0 auto;background:var(--bg);display:flex;flex-direction:column;position:relative;}
 .hdr{padding:14px 22px 0;flex-shrink:0;}
 .hdr-date{display:flex;justify-content:space-between;align-items:center;padding:4px 0;}
-.hdr-date .dt{font-size:20px;font-weight:500;color:var(--t1);}
-.hdr-date .dw{font-size:15px;color:var(--t2);}
+.hdr-date .dt{font-size:18px;font-weight:500;color:var(--t1);}
+.hdr-date .dw{font-size:13px;color:var(--t2);}
 .sync-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;transition:background .3s;}
 .subtabs{display:flex;gap:8px;padding:10px 22px 0;flex-shrink:0;}
-.stab{font-size:14px;padding:5px 12px;border-radius:20px;background:transparent;color:var(--t2);border:1px solid var(--dash);cursor:pointer;font-family:inherit;}
+.stab{font-size:12px;padding:5px 12px;border-radius:20px;background:transparent;color:var(--t2);border:1px solid var(--dash);cursor:pointer;font-family:inherit;}
 .stab.on{background:var(--t1);color:#fff;border-color:var(--t1);}
 #content{flex:1;overflow:hidden;}
-.screen{display:none;height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:13px 22px 72px;}
+.screen{display:none;height:100%;overflow-y:auto;padding:12px 22px 90px;}
 .screen.on{display:block;}
-.card{background:var(--surface);border-radius:14px;padding:13px 15px;margin-bottom:15px;}
+.card{background:var(--surface);border-radius:14px;padding:12px 14px;margin-bottom:14px;}
 .card-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;}
-.card-lbl{font-size:13px;color:var(--t2);}
+.card-lbl{font-size:11px;color:var(--t2);}
 .prog-bar{height:4px;border-radius:4px;overflow:hidden;display:flex;gap:1px;background:#E8E8E8;}
 .prog-done{height:4px;background:var(--red);transition:width .3s;}
 .prog-miss{height:4px;background:#CCCCCC;transition:width .3s;}
 .prog-rest{flex:1;height:4px;background:#E8E8E8;}
 .stat-nums{display:flex;gap:8px;align-items:center;}
-.sn-done{font-size:14px;color:var(--t1);font-weight:500;}
-.sn-sep{font-size:14px;color:#CCCCCC;}
-.sn-miss{font-size:14px;color:var(--red);font-weight:500;}
-.sec{font-size:16px;font-weight:500;color:var(--t1);margin-bottom:12px;}
+.sn-done{font-size:12px;color:var(--t1);font-weight:500;}
+.sn-sep{font-size:12px;color:#CCCCCC;}
+.sn-miss{font-size:12px;color:var(--red);font-weight:500;}
+.sec{font-size:14px;font-weight:500;color:var(--t1);margin-bottom:12px;}
 .tl-item{display:flex;align-items:center;gap:12px;cursor:pointer;user-select:none;}
 .tl-item:active{opacity:.7;}
 .ck-done{width:22px;height:22px;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .ck-miss{width:22px;height:22px;border-radius:50%;background:#FFF0F0;border:1px solid var(--red);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .ck-up{width:22px;height:22px;border-radius:50%;border:1px solid var(--dash);background:var(--bg);flex-shrink:0;}
-.conn{display:flex;gap:12px;height:22px;}
+.conn{display:flex;gap:12px;height:14px;}
 .conn-line{width:22px;display:flex;justify-content:center;flex-shrink:0;}
-.conn-line::after{content:'';border-left:1px dashed var(--dash);height:22px;}
+.conn-line::after{content:'';border-left:1px dashed var(--dash);height:14px;}
 .sep-row{display:flex;gap:12px;}
 .sep-left{width:22px;display:flex;flex-direction:column;align-items:center;flex-shrink:0;}
 .sep-lt{border-left:1px dashed var(--dash);height:12px;}
 .sep-gap{height:6px;}
-.sep-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
+.sep-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
 .sep-lb{border-left:1px dashed var(--dash);height:12px;}
 .sep-right{flex:1;display:flex;align-items:center;gap:6px;}
 .sep-hl{height:1px;flex:1;opacity:.2;}
-.sep-txt{font-size:12px;font-weight:500;white-space:nowrap;}
+.sep-txt{font-size:10px;font-weight:500;white-space:nowrap;}
 .ic{display:flex;align-items:center;flex:1;transition:opacity .15s;}
 .ic.dim{opacity:.35;}
 .isq{width:34px;height:34px;border-radius:10px;background:#F5F5F5;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .itxt{flex:1;margin-left:10px;}
-.iname{font-size:15px;font-weight:500;color:var(--t1);}
-.istreak{font-size:12px;color:var(--t3);margin-top:2px;min-height:14px;}
+.iname{font-size:13px;font-weight:500;color:var(--t1);}
+.istreak{font-size:10px;color:var(--t3);margin-top:2px;min-height:14px;}
 .idur{display:flex;align-items:center;gap:3px;flex-shrink:0;}
-.idur span{font-size:13px;color:var(--t3);}
+.idur span{font-size:11px;color:var(--t3);}
 .wrow{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
-.wd{font-size:14px;min-width:16px;}
-.wdt{font-size:13px;color:var(--t3);min-width:16px;}
+.wd{font-size:12px;min-width:16px;}
+.wdt{font-size:11px;color:var(--t3);min-width:16px;}
 .wbar{flex:1;height:4px;background:#EBEBEB;border-radius:4px;overflow:hidden;}
 .wfill{height:4px;border-radius:4px;}
-.wfrac{font-size:13px;color:var(--t2);min-width:32px;text-align:right;}
+.wfrac{font-size:11px;color:var(--t2);min-width:32px;text-align:right;}
 .sum-card{background:var(--surface);border-radius:14px;padding:14px;margin-top:14px;}
 .sum-inner{display:flex;align-items:center;justify-content:space-between;gap:12px;}
-.sum-lbl{font-size:13px;color:var(--t2);margin-bottom:8px;}
+.sum-lbl{font-size:11px;color:var(--t2);margin-bottom:8px;}
 .sum-counts{display:flex;gap:12px;align-items:center;}
 .cnt{display:flex;align-items:center;gap:4px;}
 .cnt-dot{width:4px;height:4px;border-radius:50%;flex-shrink:0;}
-.cnt-val{font-size:14px;font-weight:500;}
-.sum-pct{font-size:34px;font-weight:500;color:var(--red);flex-shrink:0;}
+.cnt-val{font-size:12px;font-weight:500;}
+.sum-pct{font-size:32px;font-weight:500;color:var(--red);flex-shrink:0;}
 .streak-row{display:flex;align-items:center;gap:4px;margin-top:8px;}
-.streak-row span{font-size:13px;color:var(--t2);}
+.streak-row span{font-size:11px;color:var(--t2);}
 .cal-hdr{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center;margin-bottom:4px;}
-.cal-hdr span{font-size:11px;color:var(--t2);}
+.cal-hdr span{font-size:9px;color:var(--t2);}
 .cal-hdr span.wknd{color:#CCCCCC;}
 .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center;}
 .cal-cell{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 2px;}
-.cal-cell span{font-size:12px;}
+.cal-cell span{font-size:10px;}
 .rlist-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
-.add-btn{font-size:14px;color:var(--red);background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:3px;font-family:inherit;padding:0;}
-.ritem{display:flex;align-items:center;gap:12px;padding:18px 0;border-bottom:.5px solid var(--border);cursor:pointer;}
+.add-btn{font-size:12px;color:var(--red);background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:3px;font-family:inherit;padding:0;}
+.ritem{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:.5px solid var(--border);cursor:pointer;}
 .ritem:last-child{border-bottom:none;}
 .ritem:active{opacity:.7;}
 .rinfo{flex:1;}
-.rname{font-size:15px;font-weight:500;color:var(--t1);}
-.rmeta{font-size:12px;color:var(--t3);margin-top:2px;}
+.rname{font-size:13px;font-weight:500;color:var(--t1);}
+.rmeta{font-size:10px;color:var(--t3);margin-top:2px;}
 .sgrp{margin-bottom:16px;}
-.sgrp-lbl{font-size:13px;font-weight:500;color:var(--t2);margin-bottom:6px;}
+.sgrp-lbl{font-size:11px;font-weight:500;color:var(--t2);margin-bottom:6px;}
 .scard{background:var(--surface);border-radius:14px;overflow:hidden;}
-.srow{display:flex;justify-content:space-between;align-items:center;padding:12px 15px;border-bottom:.5px solid var(--border);cursor:pointer;}
+.srow{display:flex;justify-content:space-between;align-items:center;padding:11px 14px;border-bottom:.5px solid var(--border);cursor:pointer;}
 .srow:last-child{border-bottom:none;}
 .srow:active{background:#F0F0F0;}
-.srow-l{font-size:15px;color:var(--t1);}
-.srow-sub{font-size:12px;color:var(--t3);margin-top:2px;}
-.srow-v{font-size:14px;color:var(--red);font-weight:500;}
+.srow-l{font-size:13px;color:var(--t1);}
+.srow-sub{font-size:10px;color:var(--t3);margin-top:2px;}
+.srow-v{font-size:12px;color:var(--red);font-weight:500;}
 .srow-v.gray{color:var(--t2);}
-.srow-code{font-size:16px;font-weight:500;color:var(--t1);letter-spacing:2px;}
+.srow-code{font-size:14px;font-weight:500;color:var(--t1);letter-spacing:2px;}
 #bnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;border-top:.5px solid var(--border);padding:10px 0 max(18px,env(safe-area-inset-bottom));background:var(--bg);display:flex;justify-content:space-around;z-index:100;}
 .nbtn{background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--t3);font-family:inherit;padding:0;}
 .nbtn.on{color:var(--t1);}
-.nbtn i{font-size:22px;}
-.nbtn span{font-size:12px;}
+.nbtn i{font-size:20px;}
+.nbtn span{font-size:10px;}
 .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:200;align-items:flex-end;justify-content:center;}
 .overlay.on{display:flex;}
 .sheet{width:100%;max-width:430px;background:var(--bg);border-radius:20px 20px 0 0;padding:16px 22px max(24px,env(safe-area-inset-bottom));max-height:88vh;overflow-y:auto;}
 .sheet-hdl{width:36px;height:4px;border-radius:2px;background:var(--dash);margin:0 auto 14px;}
-.sheet-title{font-size:18px;font-weight:500;color:var(--t1);margin-bottom:16px;}
+.sheet-title{font-size:16px;font-weight:500;color:var(--t1);margin-bottom:16px;}
 .fg{margin-bottom:13px;}
-.flbl{font-size:13px;color:var(--t2);margin-bottom:5px;}
-.finput{width:100%;padding:10px 12px;border:1px solid var(--dash);border-radius:10px;font-size:16px;font-family:inherit;color:var(--t1);background:var(--bg);outline:none;-webkit-appearance:none;}
+.flbl{font-size:11px;color:var(--t2);margin-bottom:5px;}
+.finput{width:100%;padding:10px 12px;border:1px solid var(--dash);border-radius:10px;font-size:14px;font-family:inherit;color:var(--t1);background:var(--bg);outline:none;-webkit-appearance:none;}
 .finput:focus{border-color:var(--red);}
-.fsel{width:100%;padding:10px 12px;border:1px solid var(--dash);border-radius:10px;font-size:16px;font-family:inherit;color:var(--t1);background:var(--bg);-webkit-appearance:none;appearance:none;outline:none;}
+.fsel{width:100%;padding:10px 12px;border:1px solid var(--dash);border-radius:10px;font-size:14px;font-family:inherit;color:var(--t1);background:var(--bg);-webkit-appearance:none;appearance:none;outline:none;}
 .day-chips{display:flex;gap:6px;flex-wrap:wrap;}
-.dchip{padding:5px 10px;border-radius:16px;font-size:14px;border:1px solid var(--dash);cursor:pointer;background:transparent;color:var(--t2);font-family:inherit;}
+.dchip{padding:5px 10px;border-radius:16px;font-size:12px;border:1px solid var(--dash);cursor:pointer;background:transparent;color:var(--t2);font-family:inherit;}
 .dchip.on{background:var(--t1);color:#fff;border-color:var(--t1);}
 .icon-grid{display:flex;flex-wrap:wrap;gap:8px;}
 .iopt{width:38px;height:38px;border-radius:10px;background:#F5F5F5;display:flex;align-items:center;justify-content:center;cursor:pointer;border:2px solid transparent;flex-shrink:0;}
 .iopt.on{border-color:var(--t1);}
-.btn-p{width:100%;padding:12px;background:var(--t1);color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:500;font-family:inherit;cursor:pointer;margin-top:6px;}
-.btn-d{width:100%;padding:12px;background:#FFF0F0;color:var(--red);border:none;border-radius:12px;font-size:16px;font-weight:500;font-family:inherit;cursor:pointer;margin-top:6px;}
-.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--t1);color:#fff;padding:8px 16px;border-radius:20px;font-size:15px;z-index:300;opacity:0;transition:opacity .25s,transform .25s;white-space:nowrap;pointer-events:none;}
+.btn-p{width:100%;padding:12px;background:var(--t1);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:500;font-family:inherit;cursor:pointer;margin-top:6px;}
+.btn-d{width:100%;padding:12px;background:#FFF0F0;color:var(--red);border:none;border-radius:12px;font-size:14px;font-weight:500;font-family:inherit;cursor:pointer;margin-top:6px;}
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--t1);color:#fff;padding:8px 16px;border-radius:20px;font-size:13px;z-index:300;opacity:0;transition:opacity .25s,transform .25s;white-space:nowrap;pointer-events:none;}
 .toast.on{opacity:1;transform:translateX(-50%) translateY(0);}
-.empty{text-align:center;padding:40px 0;color:var(--t3);font-size:15px;line-height:1.8;}
+.empty{text-align:center;padding:40px 0;color:var(--t3);font-size:13px;line-height:1.8;}
 .sdot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
-
-.fab{position:absolute;bottom:calc(100px + env(safe-area-inset-bottom));right:22px;width:52px;height:52px;border-radius:50%;background:var(--red);color:#fff;border:none;font-size:30px;font-weight:300;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(232,69,60,.35);z-index:150;transition:opacity .2s,transform .2s;}
-.fab:active{transform:scale(.93);}
-.fab.hidden{display:none;}
 </style>
 </head>
 <body>
@@ -159,7 +154,6 @@ html,body{height:100%;background:#EFEFEF;font-family:'Pretendard',-apple-system,
     <div class="screen" id="sc-settings"></div>
   </div>
   <div id="bnav"></div>
-  <button class="fab hidden" id="fab" onclick="openAdd()">+</button>
 </div>
 <div class="overlay" id="overlay" onclick="overlayClick(event)">
   <div class="sheet" id="sheet"></div>
@@ -193,12 +187,7 @@ async function cloudLoad() {
       sb.from('records').select('date,data').eq('user_id', S.userId),
       sb.from('settings').select('data').eq('user_id', S.userId).maybeSingle(),
     ]);
-    if (r1.data?.data) {
-      S.routines = r1.data.data;
-      console.log('[sync] loaded routines from cloud:', S.routines.length);
-    } else {
-      console.log('[sync] no routines in cloud for userId:', S.userId);
-    }
+    if (r1.data?.data) S.routines = r1.data.data;
     if (r2.data) r2.data.forEach(row => { S.records[row.date] = row.data; });
     if (r3.data?.data) S.cfg = { ...S.cfg, ...r3.data.data };
     saveLocal();
@@ -311,7 +300,6 @@ function mins(t){ const [h,m]=t.split(':').map(Number); return h*60+m; }
 function nowMins(){ const n=new Date(); return n.getHours()*60+n.getMinutes(); }
 function nowStr(){ const n=new Date(); return pad(n.getHours())+':'+pad(n.getMinutes()); }
 function uid(){ return 'r'+Date.now()+Math.random().toString(36).slice(2,6); }
-function fmtTime12(t){ if(!t)return ''; const [h,m]=t.split(':').map(Number); const ap=h>=12?'오후':'오전',hh=h%12||12; return `${ap} ${hh}:${String(m).padStart(2,'0')}`; }
 function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
 function routinesForDate(d) {
@@ -365,7 +353,7 @@ function buildDayElems(routines) {
   const elems=[], flags={ws:!isWD,we:!isWD,now:false};
   for(const r of routines){
     const rm=mins(r.time);
-    if(!flags.ws&&rm>=ws){flags.ws=true;elems.push({t:'sep',label:S.cfg.workStart+' 근무 시작',color:'#BBBBBB'});}
+    if(!flags.ws&&rm>=ws){flags.ws=true;elems.push({t:'sep',label:S.cfg.workStart+' 근무 시작',color:'#888888'});}
     if(!flags.we&&rm>=we){flags.we=true;elems.push({t:'sep',label:S.cfg.workEnd+' 근무 종료',color:'#BBBBBB'});}
     if(!flags.now&&rm>nm){flags.now=true;elems.push({t:'sep',label:'지금 '+now,color:'#E8453C'});}
     elems.push({t:'item',r});
@@ -393,10 +381,10 @@ function renderDay() {
         <div class="sep-right"><div class="sep-hl" style="background:${e.color};"></div><span class="sep-txt" style="color:${e.color};">${e.label}</span><div class="sep-hl" style="background:${e.color};"></div></div></div>`;
       } else {
         const r=e.r, s=getStatus(r,ds), dim=s==='missed'?' dim':'', streak=getStreak(r.id);
-        const ck=s==='done'?`<div class="ck-done"><i class="ti ti-check" style="font-size:13px;color:#fff;"></i></div>`:s==='missed'?`<div class="ck-miss"><i class="ti ti-x" style="font-size:12px;color:var(--red);"></i></div>`:`<div class="ck-up"></div>`;
-        h+=`<div class="tl-item" onclick="toggle('${r.id}')">${ck}<div class="ic${dim}"><div class="isq"><i class="ti ${r.icon}" style="font-size:18px;color:${r.ic};"></i></div>
-        <div class="itxt"><div class="iname">${esc(r.name)}</div><div class="istreak">${streak>0?'스트릭 '+streak+'일':fmtTime12(r.time)}</div></div>
-        <div class="idur"><i class="ti ti-clock" style="font-size:13px;color:#BBBBBB;"></i><span>${r.dur}분</span></div></div></div>`;
+        const ck=s==='done'?`<div class="ck-done"><i class="ti ti-check" style="font-size:11px;color:#fff;"></i></div>`:s==='missed'?`<div class="ck-miss"><i class="ti ti-x" style="font-size:10px;color:var(--red);"></i></div>`:`<div class="ck-up"></div>`;
+        h+=`<div class="tl-item" onclick="toggle('${r.id}')">${ck}<div class="ic${dim}"><div class="isq"><i class="ti ${r.icon}" style="font-size:16px;color:${r.ic};"></i></div>
+        <div class="itxt"><div class="iname">${esc(r.name)}</div><div class="istreak">${streak>0?'스트릭 '+streak+'일':''}</div></div>
+        <div class="idur"><i class="ti ti-clock" style="font-size:11px;color:#BBBBBB;"></i><span>${r.dur}분</span></div></div></div>`;
         if(next&&next.t==='item') h+=`<div class="conn"><div class="conn-line"></div></div>`;
       }
     }
@@ -467,7 +455,7 @@ function renderMonth() {
   <div class="sum-counts" style="margin-bottom:${streak>0?8:0}px;">
   <div class="cnt"><div class="cnt-dot" style="background:#111;"></div><span class="cnt-val" style="color:#111;">${totalDone} 완료</span></div>
   <div class="cnt"><div class="cnt-dot" style="background:var(--red);"></div><span class="cnt-val" style="color:var(--red);">${totalMiss} 놓침</span></div>
-  </div>${streak>0?`<div class="streak-row"><i class="ti ti-flame" style="font-size:14px;color:var(--red);"></i><span>연속 ${streak}일 달성 중</span></div>`:''}</div>
+  </div>${streak>0?`<div class="streak-row"><i class="ti ti-flame" style="font-size:12px;color:var(--red);"></i><span>연속 ${streak}일 달성 중</span></div>`:''}</div>
   <div class="sum-pct">${pct}%</div></div></div>`;
 }
 
@@ -489,12 +477,12 @@ function calcStreak() {
 function renderRoutineList() {
   const el=document.getElementById('sc-routine');
   let h=`<div class="rlist-hdr"><span class="sec" style="margin-bottom:0;">루틴 설정</span>
-  <button class="add-btn" onclick="openAdd()"><i class="ti ti-plus" style="font-size:15px;"></i> 추가</button></div>`;
+  <button class="add-btn" onclick="openAdd()"><i class="ti ti-plus" style="font-size:13px;"></i> 추가</button></div>`;
   if(!S.routines.length){ h+=`<div class="empty">루틴을 추가해보세요</div>`; }
   else { h+=S.routines.map(r=>`<div class="ritem" onclick="openEdit('${r.id}')">
-    <div class="isq"><i class="ti ${r.icon}" style="font-size:18px;color:${r.ic};"></i></div>
+    <div class="isq"><i class="ti ${r.icon}" style="font-size:16px;color:${r.ic};"></i></div>
     <div class="rinfo"><div class="rname">${esc(r.name)}</div><div class="rmeta">${r.time} · ${daysLabel(r.days)}</div></div>
-    <i class="ti ti-chevron-right" style="font-size:16px;color:#CCCCCC;"></i></div>`).join(''); }
+    <i class="ti ti-chevron-right" style="font-size:14px;color:#CCCCCC;"></i></div>`).join(''); }
   el.innerHTML=h;
 }
 
@@ -514,11 +502,11 @@ function renderSettings() {
     </div>
     <div class="srow" onclick="editCfg('syncCode')">
       <div class="srow-l">다른 기기 코드 입력</div>
-      <i class="ti ti-chevron-right" style="font-size:16px;color:#CCCCCC;"></i>
+      <i class="ti ti-chevron-right" style="font-size:14px;color:#CCCCCC;"></i>
     </div>
     <div class="srow" onclick="forceSync()" style="cursor:pointer;">
       <div class="srow-l">지금 동기화</div>
-      <i class="ti ti-refresh" style="font-size:16px;color:#CCCCCC;"></i>
+      <i class="ti ti-refresh" style="font-size:14px;color:#CCCCCC;"></i>
     </div>
   </div></div>
   <div class="sgrp"><div class="sgrp-lbl">근무 시간</div><div class="scard">
@@ -529,7 +517,7 @@ function renderSettings() {
   <div class="sgrp"><div class="sgrp-lbl">알림</div><div class="scard">
     <div class="srow" onclick="toggleNotif()">
       <div><div class="srow-l">알림 사용</div><div class="srow-sub">근무시간: 맥 · 그 외: 아이폰</div></div>
-      <div style="display:flex;align-items:center;gap:5px;"><div class="sdot" style="background:${nc};"></div><span style="font-size:13px;color:#999;">${nl}</span></div>
+      <div style="display:flex;align-items:center;gap:5px;"><div class="sdot" style="background:${nc};"></div><span style="font-size:11px;color:#999;">${nl}</span></div>
     </div>
     <div class="srow" onclick="editCfg('notifMins')"><span class="srow-l">미리 알림</span><span class="srow-v">${c.notifMins}분 전</span></div>
   </div></div>
@@ -546,7 +534,6 @@ function renderSettings() {
 
 async function forceSync() {
   toast('동기화 중...');
-  await cloudSave();
   await cloudLoad();
   renderAll();
   toast('동기화 완료');
@@ -574,11 +561,8 @@ function switchBot(tab) {
   nav.bot=tab; renderSubtabs(); renderBNav();
   const scr=tab==='today'?nav.sub:tab;
   showScreen(scr);
-  if(scr==='day')renderDay();
   if(scr==='week')renderWeek(); if(scr==='month')renderMonth();
   if(scr==='routine')renderRoutineList(); if(scr==='settings')renderSettings();
-  const fab=document.getElementById('fab');
-  if(fab) fab.classList.toggle('hidden', scr!=='routine');
 }
 function switchSub(tab) {
   nav.sub=tab; renderSubtabs(); showScreen(tab);
@@ -601,7 +585,7 @@ function routineForm(r) {
   const cat=r?.cat||'personal', days=r?.days||[1,2,3,4,5];
   const icon=r?.icon||'ti-heart', ic=r?.ic||'#C8693A';
   const dayCh=DNAMES.map((d,i)=>`<button type="button" class="dchip${days.includes(i)?' on':''}" onclick="this.classList.toggle('on')">${d}</button>`).join('');
-  const icons=ICON_OPTS.map(o=>`<div class="iopt${o.i===icon?' on':''}" onclick="pickIcon('${o.i}','${o.c}',this)"><i class="ti ${o.i}" style="font-size:18px;color:${o.c};"></i></div>`).join('');
+  const icons=ICON_OPTS.map(o=>`<div class="iopt${o.i===icon?' on':''}" onclick="pickIcon('${o.i}','${o.c}',this)"><i class="ti ${o.i}" style="font-size:16px;color:${o.c};"></i></div>`).join('');
   return `<div class="sheet-hdl"></div><div class="sheet-title">${r?'루틴 수정':'루틴 추가'}</div>
   <div class="fg"><div class="flbl">이름</div><input class="finput" id="fn" placeholder="루틴 이름" value="${esc(name)}"></div>
   <div class="fg"><div class="flbl">시간</div><input class="finput" id="ft" type="time" value="${time}"></div>
@@ -628,8 +612,7 @@ function saveRoutine() {
   document.querySelectorAll('#dchips .dchip.on').forEach(b=>{ const i=DNAMES.indexOf(b.textContent); if(i>=0)days.push(i); });
   if(!days.length){toast('요일을 선택해주세요');return;}
   if(editId){ const i=S.routines.findIndex(r=>r.id===editId); if(i>=0) S.routines[i]={...S.routines[i],name,time,dur,cat,icon,ic,days}; }
-  else { S.routines.push({id:uid(),name,time,dur,cat,icon,ic,days,notif:true}); }
-  S.routines.sort((a,b)=>mins(a.time)-mins(b.time));
+  else { S.routines.push({id:uid(),name,time,dur,cat,icon,ic,days,notif:true}); S.routines.sort((a,b)=>mins(a.time)-mins(b.time)); }
   save(); closeSheet(); renderRoutineList(); renderDay(); toast('저장됐어요'); scheduleNotifs();
 }
 
@@ -655,7 +638,7 @@ function editCfg(key) {
   } else if(key==='syncCode'){
     html=`<div class="sheet-hdl"></div><div class="sheet-title">동기화 코드 입력</div>
     <div class="fg"><div class="flbl">맥에서 표시된 코드를 입력하세요</div>
-    <input class="finput" id="cfgval" placeholder="XXXXXX" maxlength="8" style="text-transform:uppercase;letter-spacing:2px;font-size:20px;text-align:center;"></div>
+    <input class="finput" id="cfgval" placeholder="XXXXXX" maxlength="8" style="text-transform:uppercase;letter-spacing:2px;font-size:18px;text-align:center;"></div>
     <button class="btn-p" onclick="applySyncCode()">연결</button>`;
   }
   showSheet(html);
@@ -675,7 +658,7 @@ async function applySyncCode() {
   if(code.length<4){toast('코드를 입력해주세요');return;}
   S.userId=code; saveLocal();
   closeSheet(); toast('연결 중...');
-  await cloudLoad(); renderAll(); toast('완료 — 루틴 '+S.routines.length+'개 로드');
+  await cloudLoad(); renderAll(); toast('동기화 완료');
 }
 
 /* ================================================================
@@ -725,8 +708,8 @@ async function init() {
   loadLocal();
   renderHeader(); renderSubtabs(); renderBNav(); renderDay(); showScreen('day');
   scheduleNotifs();
-  // Push local data to cloud first, then pull (ensures local data isn't lost)
-  cloudSave().then(()=>cloudLoad()).then(()=>{ renderAll(); });
+  // Load from cloud (non-blocking, re-renders after)
+  cloudLoad().then(()=>{ renderAll(); });
   // Auto-refresh every minute
   setInterval(()=>{ renderHeader(); if(nav.bot==='today'&&nav.sub==='day') renderDay(); }, 60000);
   // Periodic cloud pull every 30 seconds
